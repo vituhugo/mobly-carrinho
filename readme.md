@@ -35,10 +35,16 @@
 
 O setup deste projeto é bem simples. Principalmente se for utilizado o docker.
 
-Após baixar o projeto do github, a primeira coisa a se fazer é ir até a raiz do projeto e copie o arquivo .env.example e nomeio como .env.
+Após baixar o projeto do github, a primeira coisa a se fazer é ir até a raiz do projeto. 
+
+Copie o arquivo .env.example e renomeio para .env
+
+Em seguida rode o composer:
+    
+```composer install```
+
 
 ## Com Docker
-somente é necessário rodar os comandos abaixo na raiz do projeto:
 
 ```docker-compose up -d --build```
 
@@ -46,11 +52,11 @@ somente é necessário rodar os comandos abaixo na raiz do projeto:
 
 ```php artisan migrate --seed```
 
-e pronto, você já vai ter uma instância do projeto em http://localhost:8080
+Pronto, você já vai ter uma instância do projeto em http://localhost:8080
 
 ## Sem o Docker
 
-Caso você não tenha o docker, vai ser necessário configurar o banco de dados com o a applicação, e para isso será necessário mudar as variaveis de ambiente do .env
+Caso você não tenha o docker, vai ser necessário configurar o banco de dados com o a applicação, e para isso será necessário mudar as variáveis de ambiente do .env
 não é nenhum bixo de 7 cabeças, elas são bem visiveis e utilizao o prefixo "DB_".
 
 Depois de o banco estiver configurado, va na raiz, rode o composer para adicionar o vendor, e execute o comando:
@@ -61,4 +67,4 @@ em seguida rode o comando
 
 ```php artisan serve```
 
-Este comando é o servidor imbutido do Laravel, ele vai ativar uma instancia da aplicação no endereço http://localhost:3000
+Este comando é o servidor embutido do Laravel, ele vai ativar uma instância da aplicação no endereço http://localhost:3000
