@@ -16,17 +16,17 @@
 - [OK] Front End : Angular / Bootstrap / React / Vue;
 - [OK] Docker
 
-####Diferenciais
+#### Diferenciais
 
 - Restfull API
 - Calculo de frete
 - Seeders e Factories para Testes
 
 
-#Setup
+# Setup
 
 
-###Pré-requisitos
+### Pré-requisitos
 - PHP-7.2
 - Mysql-5.7
 - Composer
@@ -37,7 +37,7 @@ O setup deste projeto é bem simples. Principalmente se for utilizado o docker.
 
 Após baixar o projeto do github, a primeira coisa a se fazer é ir até a raiz do projeto e copie o arquivo .env.example e nomeio como .env.
 
-##Com Docker
+## Com Docker
 somente é necessário rodar os comandos abaixo na raiz do projeto:
 
 ```docker-compose up -d --build```
@@ -48,7 +48,7 @@ somente é necessário rodar os comandos abaixo na raiz do projeto:
 
 e pronto, você já vai ter uma instância do projeto em http://localhost:8080
 
-##Sem o Docker
+## Sem o Docker
 
 Caso você não tenha o docker, vai ser necessário configurar o banco de dados com o a applicação, e para isso será necessário mudar as variaveis de ambiente do .env
 não é nenhum bixo de 7 cabeças, elas são bem visiveis e utilizao o prefixo "DB_".
