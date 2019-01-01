@@ -7,6 +7,8 @@
 
 require('./bootstrap');
 
+require('bootstrap-notify');
+
 window.Vue = require('vue');
 
 /**

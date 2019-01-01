@@ -13,18 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('/produto', 'ProdutoController@buscar')->name('api.produtos.buscar');
 Route::get('/produto/{produto}', 'ProdutoController@get')->name('api.produtos.get');
 
-Route::get('/produto', 'ProdutoController@buscar')->name('api.produtos.buscar');
 
-Route::post('/ordem', 'OrdemController@criar')->name('api.ordem');
+Route::put('/ordem', 'OrdemController@criar')->name('api.ordem');
+Route::post('/calcular-frete', 'OrdemController@calcularFrete')->name('api.frete');
+Route::get('/buscar-cep/{cep}', 'OrdemController@buscaCep')->name('buscar-cep');
 
-Route::post('/frete', 'OrdemController@calcularFrete')->name('api.frete');
-
-Route::get('/busca-cep/{cep}', 'OrdemController@buscaCep')->name('buscar-cep');
-
-Route::post('/registrar', 'ClienteController@registrar')->name('api.registrar');
+Route::put('/cliente', 'ClienteController@criar')->name('api.registrar');
+Route::middleware('jwt.auth')->get('/perfil', 'ClienteController@perfil')->name('api.clientes');
 
 Route::post('auth/get-token', 'AuthController@getToken')->name('api.token');
-
-Route::middleware('jwt.auth')->get('/clientes', 'ClienteController@get')->name('api.clientes');

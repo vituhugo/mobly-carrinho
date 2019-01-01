@@ -1,59 +1,56 @@
+import Carrinho from "./../classes/Carrinho";
+import Notify from "./../classes/Notify";
+import Utils from "./../classes/Utils";
+import Storage from '../servicos/Storage';
+import Logistica from "../servicos/Logistica";
 export default {
     el: '#app-carrinho',
 
     data() {
-        let carrinho = sessionStorage.getItem('carrinho');
-        if (!carrinho) carrinho = '[]';
+        console.log(Carrinho.items());
         return {
+            carrinho: Carrinho.items(),
+
+            total: 0,
             frete: 0,
             prazo: false,
-            carrinho: JSON.parse(carrinho),
-            total: 0,
             cep: null,
         }
     },
 
     methods: {
 
-        formatarPreco (valor) {
-            let val = (valor/1).toFixed(2).replace('.', ',')
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-        },
+        formatarPreco: Utils.formatarPreco,
 
         finalizarCompra (e) {
+
             if (!this.carrinho.length) {
-                alert('Seu carrinho está vazio.');
+                Notify.danger('Seu carrinho está vazio.');
+                e.preventDefault();
             }
+
             if (!this.frete) {
-                alert('Por favor primeiro calcule o Frete.');
+                Notify.danger('É necessário calcular o frete primeiro.');
                 e.preventDefault();
             }
         },
 
-        refreshTotal (refreshCarrinho) {
+        atualizarProduto (produto, quantidade) {
+            Carrinho.atualizarProduto(produto, quantidade);
+
+            this.carrinho = Carrinho.items();
+
+            this.refreshTotal()
+        },
+
+        refreshTotal () {
             let total = 0;
 
-            this.carrinho.forEach((produto) => {
+            Carrinho.items().forEach(produto => {
                 total += produto.preco * produto.quantidade;
             });
 
-            this.total = total;
-
-            if (refreshCarrinho) {
-                this.carrinho = this.carrinho.filter(p => +p.quantidade);
-                console.log("CARRINHO: ", this.carrinho);
-                sessionStorage.setItem('carrinho', JSON.stringify(this.carrinho));
-
-                let cep = this.cep.replace(/[^0-9]/g,'');
-
-                if (cep.length === 8) {
-                    sessionStorage.setItem('cep', cep);
-                    window.axios.post('/api/frete', {cep: cep, carrinho: this.carrinho}).then((response) => {
-                        this.frete = response.data.valor;
-                        this.prazo = response.data.prazo;
-                    })
-                }
-            }
+            this.total = total + this.frete;
         }
     },
 
@@ -62,18 +59,20 @@ export default {
             let cep = this.cep.replace(/[^0-9]/g,'')
 
             if (cep.length === 8) {
-                sessionStorage.setItem('cep', cep);
-                window.axios.post('/api/frete', {cep: cep, carrinho: this.carrinho}).then((response) => {
-                    this.frete = response.data.valor;
-                    this.prazo = response.data.prazo;
-                })
+                Storage.set('cep', cep);
+                Logistica.calcularFrete(cep, this.carrinho).then((data) => {
+                    this.frete = data.valor;
+                    this.prazo = data.prazo;
+
+                    this.refreshTotal ()
+                }).catch((e) => console.error(e));
             }
         }
     },
 
     mounted() {
-    this.refreshTotal();
-},
+        this.refreshTotal();
+    },
 
     components: {}
 }

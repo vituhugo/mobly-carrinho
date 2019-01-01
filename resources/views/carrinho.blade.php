@@ -32,7 +32,7 @@
                             <input v-model="produto.quantidade" type="number" class="form-control ml-2" style="width: 100px">
                         </label>
                         <div class="ml-4">
-                            <button class="btn btn-dark" @click="refreshTotal(true)">
+                            <button class="btn btn-dark" @click="atualizarProduto(produto, produto.quantidade)">
                                 Atualizar
                                 <i class="fas fa-sync-alt px-1"></i>
                             </button>

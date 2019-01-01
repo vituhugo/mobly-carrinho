@@ -22,7 +22,7 @@ class ClienteTest extends TestCase
     public function getTest() {
         $cliente = factory(Cliente::class)->create();
 
-        $access_token = $this->post(route('api.token'), ['email' => $cliente->user->email, 'senha' => 'secret'])->original['access_token'];
+        $access_token = $this->get(route('api.token'), ['email' => $cliente->user->email, 'senha' => 'secret'])->original['access_token'];
         $this->get(route('api.clientes', ['token' => $access_token]))
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -37,7 +37,7 @@ class ClienteTest extends TestCase
     /**
      * @test
      */
-    public function registrarTest() {
+    public function criarTest() {
         $params = [
             'nome' => 'Nome Teste',
             'email' => 'teste@teste.com.br',
@@ -47,7 +47,7 @@ class ClienteTest extends TestCase
             'cep' => '04457090',
         ];
 
-        $this->post(route('api.registrar'), $params)->assertStatus(201)
+        $this->put(route('api.registrar'), $params)->assertStatus(201)
         ->assertJsonStructure([
             'user' => [
                 'nome',

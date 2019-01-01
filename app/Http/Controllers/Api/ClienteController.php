@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ClienteController extends Controller
 {
-    public function get(Request $request) {
+    public function perfil(Request $request) {
 
         $objectToken = JWTAuth::setToken($request->get('token'));
         $id = JWTAuth::decode($objectToken->getToken())->get('sub');
@@ -33,7 +33,7 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function registrar(Request $request) {
+    public function criar(Request $request) {
         $validator = Validator::make($request->all(), [
             'email' => 'required|regex:/^.+@.+$/i',
             'nome' => 'required',
@@ -63,16 +63,12 @@ class ClienteController extends Controller
 
         unset($dados['user']['password']);
 
-        $token = User::getToken($email, $request->input('senha'));
-        if (!isset($token['access_token'])) {
-            return response()->json(['Credenciais não encontradas.'], 401);
-        }
-        return response()->json(array_merge($token, ['user' => [
+        return response()->json([
             'nome' => $cliente->user->name,
             'email' => $cliente->user->email,
             'telefone' => $cliente->telefone,
             'endereco' => $cliente->endereco,
             'cep' => $cliente->cep
-        ]]), 201);
+        ], 201);
     }
 }

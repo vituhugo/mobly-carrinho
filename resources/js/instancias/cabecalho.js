@@ -1,18 +1,23 @@
+import Notify from "../classes/Notify";
+import Storage from "../servicos/Storage";
+
 export default {
     el: '#app-header',
 
     data() {
         return {
-            usuario: sessionStorage.getItem('usuario') ? JSON.parse(sessionStorage.getItem('usuario')) : null
+            usuario: Storage.get('usuario', null)
         }
     },
 
     methods: {
         logout (e) {
             e.preventDefault();
-            sessionStorage.removeItem('access_token');
-            sessionStorage.removeItem('usuario');
 
+            Storage.remove('access_token');
+            Storage.remove('usuario');
+
+            Notify.store("Você deslogou do sistema.", "warning");
             window.location.href = "/";
         }
     }

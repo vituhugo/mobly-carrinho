@@ -1,3 +1,7 @@
+import Notify from "../classes/Notify";
+import Api from "../servicos/Api";
+import Storage from "../servicos/Storage";
+
 export default {
     el: '#app-cadastro',
 
@@ -23,19 +27,21 @@ export default {
 
             let params = this.formataForm(this.input);
 
-            window.axios.post('api/registrar', params).then((response) => {
+            Api.criarCliente(params).then((data) => {
+                Notify.store('Cadastro realizado com sucesso!', 'success');
 
-                if (response.status !== 201) {
-                    alert(response.data.message);
-                }
+                Storage.set('token', data);
 
-                alert('Cadastro realizado com sucesso!');
-                sessionStorage.setItem('access_token', response.data.access_token);
-                sessionStorage.setItem('usuario', JSON.stringify(response.data.user));
-                window.location.href = "/";
-            }).catch(function(response) {
-                alert(response.response.data.message);
-            });
+                Api.token(this.input.email, this.input.senha).then(token => {
+                    Storage.set('token', token);
+
+                    Notify.store('Agora você está logado no sistema.', 'info');
+
+                    window.location.href = "/";
+
+                }).catch(Notify.danger);
+
+            }).catch(Notify.danger);
         },
 
         validaForm(form) {
@@ -81,7 +87,8 @@ export default {
 
             window.axios.get('/api/busca-cep/'+this.input.cep.replace(/[^0-9]/g, '')).then((response) => {
                 if (!response.data.logradouro) {
-                    alert("Cep inválido.")
+                    Notify.danger("Cep inválido.");
+
                     this.input.cep = null;
                     return;
                 }

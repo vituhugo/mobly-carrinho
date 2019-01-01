@@ -1,3 +1,10 @@
+import Utils from "../classes/Utils";
+import Notify from "../classes/Notify";
+import Carrinho from "../classes/Carrinho";
+import Api from "../servicos/Api";
+import Storage from "../servicos/Storage";
+import Logistica from "../servicos/Logistica";
+
 export default {
     el: '#app-finalizar',
 
@@ -8,16 +15,17 @@ export default {
             telefone: null,
             endereco: null,
             numero: null,
-            cep: sessionStorage.getItem('cep'),
+            cep: Storage.get('cep'),
             entrega_endereco: null,
             entrega_numero: null,
-            entrega_cep: sessionStorage.getItem('cep'),
+            entrega_cep: Storage.get('cep'),
         };
 
-        input.entrega_cep = sessionStorage.getItem('cep');
+        input.entrega_cep = Storage.get('cep');
 
-        if (sessionStorage.getItem('usuario')) {
-            let usuario = JSON.parse(sessionStorage.getItem('usuario'));
+        if (Storage.has('usuario')) {
+            let usuario = Storage.get('usuario');
+
             input.nome = usuario.nome;
             input.email = usuario.email;
             input.telefone = usuario.telefone.replace(/[^0-9]/g,'');
@@ -26,16 +34,21 @@ export default {
             input.cep = usuario.cep.replace(/[^0-9]/g,'');
         }
 
-        input.entrega_endereco = input.cep == sessionStorage.getItem('cep') ? input.endereco : null;
-        input.entrega_numero = input.cep == sessionStorage.getItem('cep') ? input.numero : null;
+        input.entrega_endereco = null;
+        input.entrega_numero = null;
+
+        if (input.cep === Storage.has('cep')) {
+            input.entrega_endereco = input.cep === Storage.get('cep') ? input.endereco : null;
+            input.entrega_numero = input.cep === Storage.get('cep') ? input.numero : null;
+        }
 
         return {
             frete: null,
-            esta_logado: !!sessionStorage.getItem('usuario'),
-            carrinho: JSON.parse(sessionStorage.getItem('carrinho')),
+            esta_logado: Storage.has('usuario'),
+            carrinho: Carrinho.items(),
             total: 0,
-            cep: sessionStorage.getItem('cep'),
-            mesmo_endereco: input.cep == sessionStorage.getItem('cep'),
+            cep: Storage.get('cep'),
+            mesmo_endereco: input.cep === Storage.get('cep'),
             input: input
         }
     },
@@ -54,24 +67,22 @@ export default {
             let cep = (this.mesmo_endereco ? this.input.cep : this.entrega_cep).replace(/[^0-9]/g,'');
 
             if (cep.length === 8) {
-                sessionStorage.setItem('cep', cep);
-                window.axios.post('/api/frete', {cep: cep, carrinho: this.carrinho}).then((response) => {
-                    this.frete = response.data.valor;
-                    this.prazo = response.data.prazo;
+                Storage.set('cep', cep);
+
+                Logistica.calcularFrete(cep, this.carrinho).then((data) => {
+                    this.frete = data.valor;
+                    this.prazo = data.prazo;
                 })
             }
         },
 
-        formatarPreco (valor) {
-            let val = (valor/1).toFixed(2).replace('.', ',')
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-        },
+        formatarPreco: Utils.formatarPreco,
 
         finalizarCompra (e) {
             e.preventDefault();
 
             if (!this.frete) {
-                alert('Por favor primeiro calcule o Frete.');
+                Notify.warning('Antes de finalizar, é necessário calcular o frete.');
                 return false;
             }
 
@@ -79,46 +90,65 @@ export default {
                 carrinho: this.carrinho,
                 cliente: this.input,
                 entrega: {
-                    cep: this.input.entrega_cep,
-                    endereco: this.input.entrega_endereco
+                    cep: this.mesmo_endereco ? this.input.cep : this.input.entrega_cep,
+                    endereco: this.mesmo_endereco
+                        ? this.input.endereco + ", " + this.input.numero
+                        : this.input.entrega_endereco +", "+ this.input.entrega_numero
                 }
             };
 
             if (this.esta_logado) {
-                params.token = sessionStorage.getItem('access_token');
+                params.token = Storage.get('token').access_token;
             }
 
-            window.axios.post('api/ordem', params).then((response) => {
-                if (response.status !== 201) {
-                    return alert(response.data.message);
-                }
-
-                alert('Ordem criada com o id: ' + response.data.ordem_id);
-                sessionStorage.removeItem('carrinho');
+            Api.criarOrdem(params).then(data=> {
+                Notify.store('Ordem criada com o id: ' + data.ordem_id, 'success');
+                Carrinho.clear();
                 window.location.href = '/';
             });
         },
 
         buscarCep() {
-            window.axios.get('/api/busca-cep/'+this.input.entrega_cep.replace(/[^0-9]/g, '')).then((response) => {
-                if (!response.data.logradouro) {
-                    alert("Cep inválido.")
+            Api.buscarCep(this.input.entrega_cep).then((data) => {
+                if (!data.logradouro) {
+                    Notify.warning("Cep inválido.");
                     this.input.entrega_cep = null;
                     return;
                 }
 
-                this.input.entrega_endereco = response.data.logradouro;
+                this.input.entrega_endereco = data.logradouro;
             });
         },
+
+        buscarCepUsuario() {
+            Api.buscarCep(this.input.cep).then((data) => {
+                if (!data.logradouro) {
+                    Notify.warning("Cep inválido.");
+                    this.input.cep = null;
+                    return;
+                }
+
+                this.input.endereco = data.logradouro;
+            });
+        },
+
         resetCamposEntrega() {
             this.input.entrega_cep = this.input.cep;
             this.input.entrega_endereco = this.input.endereco;
-            this.input.numero = this.input.numero;
+            this.input.entrega_numero = this.input.numero;
         }
     },
 
     mounted() {
         this.refreshTotal();
+
+        if (this.input.cep) {
+            this.buscarCepUsuario()
+        }
+
+        if (this.input.entrega_cep) {
+            this.buscarCep();
+        }
     },
 
     components: {}

@@ -1,3 +1,7 @@
+import Utils from "../classes/Utils";
+import Carrinho from "../classes/Carrinho";
+import Notify from "../classes/Notify";
+
 export default {
     el: '#app',
         data () {
@@ -20,36 +24,12 @@ export default {
     }
 },
     methods: {
+
         addCarrinho (produto) {
-
-            if (produto.estoque < produto.quantidade) {
-                return alert('quantidade desejada ultrapassa o limite do estoque');
-            }
-
-            if (produto.quantidade === 0) {
-                return alert('É necessário adicionar pelo menos 1 item.');
-            }
-
-            let carrinho = window.sessionStorage.getItem('carrinho') || '[]';
-            carrinho = JSON.parse(carrinho);
-
-            let prod = carrinho.find((p) => p.id == produto.id);
-
-            if (!prod) {
-                carrinho.push(produto);
-            } else {
-                prod.quantidade = +prod.quantidade + (+produto.quantidade);
-            }
-
-            window.sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
-
-            alert('O Produto foi adicionado ao carrinho!');
+            return Carrinho.addCarrinho(produto)
         },
 
-        formatarPreco (valor) {
-            let val = (valor/1).toFixed(2).replace('.', ',')
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-        },
+        formatarPreco: Utils.formatarPreco,
 
         atualizarProdutos () {
 
@@ -80,6 +60,7 @@ export default {
 
     mounted() {
         this.atualizarProdutos();
+        Notify.dispatch();
     },
 
     watch: {

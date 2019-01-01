@@ -64,7 +64,7 @@ class OrdemTest extends TestCase
             ->each(function(&$p) { $p->quantidade = $p->id; })
             ->toArray();
 
-        $response = $this->post(route('api.ordem'), compact('carrinho', 'cliente', 'entrega'));
+        $response = $this->put(route('api.ordem'), compact('carrinho', 'cliente', 'entrega'));
 
         $response->assertStatus(201)
             ->assertJsonStructure([
