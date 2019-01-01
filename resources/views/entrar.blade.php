@@ -17,6 +17,9 @@
                     <span>Senha</span>
                     <input type="password" v-model="input.senha" class="form-control" placeholder="Mínimo 6 digitos"  required>
                 </label>
+
+                <p class="card-text col-12"> Primeira vez aqui? <a href="{{ route('cadastrar') }}">Cadastre-se</a></p>
+
             </form>
 
             <footer class="card-footer">

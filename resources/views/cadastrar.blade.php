@@ -32,12 +32,17 @@
 
                 <label class="form-group col-12">
                     <span>CEP</span>
-                    <input type="text" v-model="input.cep" class="form-control" placeholder="00000-000" required>
+                    <input type="text" v-model="input.cep" class="form-control" placeholder="00000-000" @blur="buscarCep" required>
                 </label>
 
-                <label class="form-group col-12">
-                    <span>Endereço <small>completo com número</small></span>
-                    <input type="text" v-model="input.endereco" class="form-control" placeholder="Av. Exemplo, 99" required>
+                <label class="form-group col-10">
+                    <span>Endereço</span>
+                    <input type="text" v-model="input.endereco" class="form-control" placeholder="Av. Exemplo, 99" readonly required>
+                </label>
+
+                <label class="form-group col-2">
+                    <span>Número</span>
+                    <input type="text" v-model="input.numero" class="form-control" placeholder="999" required>
                 </label>
 
                 <label class="form-group col-12">

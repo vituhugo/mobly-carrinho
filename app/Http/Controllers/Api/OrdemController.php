@@ -18,12 +18,12 @@ class OrdemController extends Controller
         $validator = Validator::make($request->all(), [
             'carrinho' => 'required|array',
             'cliente.nome' => 'required_without:token',
-            'cliente.email' => 'required_without:token',
-            'cliente.telefone' => 'required_without:token',
+            'cliente.email' => 'required_without:token|regex:/^.+@.+$/i',
+            'cliente.telefone' => "required_without:token|regex:/^\(?[0-9]{2}\)? ?9? ?[0-9]{4}-? ?[0-9]{4}$/",
             'cliente.endereco' => 'required_without:token',
-            'cliente.cep' => 'required_without:token',
+            'cliente.cep' => 'required_without:token|regex:/^[0-9]{5}-?[0-9]{3}$/',
             'entrega.endereco' => 'string',
-            'entrega.cep' => 'string',
+            'entrega.cep' => 'regex:/^[0-9]{5}-?[0-9]{3}$/',
         ]);
 
         if ($validator->fails()) return response()->json($validator->errors(), 400);
@@ -66,6 +66,10 @@ class OrdemController extends Controller
         ];
 
         return response()->json($response, 201);
+    }
+
+    public function buscaCep($cep) {
+        return response()->json(Correios::buscaCep($cep));
     }
 
     public function calcularFrete(Request $request) {

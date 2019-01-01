@@ -37,4 +37,12 @@ class Cliente extends Model
     protected function getEmailAttribute() {
         return $this->user->email;
     }
+
+    protected function setTelefoneAttribute($value) {
+        $this->attributes['telefone'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
+    protected function setCepAttribute($value) {
+        $this->attributes['cep'] = preg_replace('/[^0-9]/', '', $value);
+    }
 }

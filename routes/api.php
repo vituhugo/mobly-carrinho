@@ -21,6 +21,8 @@ Route::post('/ordem', 'OrdemController@criar')->name('api.ordem');
 
 Route::post('/frete', 'OrdemController@calcularFrete')->name('api.frete');
 
+Route::get('/busca-cep/{cep}', 'OrdemController@buscaCep')->name('buscar-cep');
+
 Route::post('/registrar', 'ClienteController@registrar')->name('api.registrar');
 
 Route::post('auth/get-token', 'AuthController@getToken')->name('api.token');

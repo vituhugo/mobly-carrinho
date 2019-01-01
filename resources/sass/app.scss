@@ -7,7 +7,9 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
-
+main > section {
+  min-height: calc(100vh - 344px);
+}
 form {
   margin-block-end: 0;
 }

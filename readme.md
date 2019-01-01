@@ -9,7 +9,7 @@
 
 #### Requisitos Opcionais
 
-- KeyValueDB (Redis/Memcache);
+- [OK] KeyValueDB (Redis/Memcache);
 - Motores de pesquisa (Solr/Sphinx/ElasticSearch/etc); 
 - Queue (RabbitMQ / ApacheMQ / Gearman);
 - [OK] Testes Unitários ;
@@ -68,3 +68,11 @@ em seguida rode o comando
 ```php artisan serve```
 
 Este comando é o servidor embutido do Laravel, ele vai ativar uma instância da aplicação no endereço http://localhost:3000
+
+##### Redis (Sem o docker)
+
+Caso não esteja utilizando o docker e não esteja habituado a configurar o Redis, aconselho a desativar ele.
+
+Para isso, vá no .env e altere a opção da seguinte forma:
+
+```CACHE_DRIVER=file``` 

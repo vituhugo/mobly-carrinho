@@ -35,12 +35,12 @@ class ClienteController extends Controller
 
     public function registrar(Request $request) {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|regex:/^.+@.+$/i',
             'nome' => 'required',
-            'senha' => 'required',
+            'senha' => 'required|min:6',
             'endereco' => 'required',
-            'cep' => 'required',
-            'telefone' => 'required'
+            'cep' => 'required|regex:/^[0-9]{5}-?[0-9]{3}$/',
+            'telefone' => 'required|regex:/^\(?[0-9]{2}\)? ?9? ?[0-9]{4}-? ?[0-9]{4}$/'
         ]);
 
         if ($validator->fails()) {

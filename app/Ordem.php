@@ -90,4 +90,16 @@ class Ordem extends Model
         return Correios::calcularFrete(config('services.correios.cep_origem'), $cep, $produtos);
     }
 
+    protected function setOrdemTelefoneAttribute($value) {
+        $this->attributes['ordem_telefone'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
+    protected function setOrdemCepAttribute($value) {
+        $this->attributes['ordem_cep'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
+    protected function setEntregaCepAttribute($value) {
+        $this->attributes['entrega_cep'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
 }

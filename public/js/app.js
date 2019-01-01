@@ -47772,385 +47772,11 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-if (document.getElementById('app')) {
-  var app = new Vue({
-    el: '#app',
-    data: function data() {
-      return {
-        busca: null,
-        ipp: null,
-        order_by: null,
-        order_type: null,
-        produtos: [],
-        pagina_atual: 1,
-        paginate_info: {},
-        input: {
-          busca: null,
-          itens_por_pagina: 10,
-          ordenado_por: 'nome',
-          ordenado_tipo: 'asc'
-        }
-      };
-    },
-    methods: {
-      addCarrinho: function addCarrinho(produto) {
-        if (produto.estoque < produto.quantidade) {
-          return alert('quantidade desejada ultrapassa o limite do estoque');
-        }
-
-        if (produto.quantidade === 0) {
-          return alert('É necessário adicionar pelo menos 1 item.');
-        }
-
-        var carrinho = window.sessionStorage.getItem('carrinho') || '[]';
-        carrinho = JSON.parse(carrinho);
-        var prod = carrinho.find(function (p) {
-          return p.id == produto.id;
-        });
-
-        if (!prod) {
-          carrinho.push(produto);
-        } else {
-          prod.quantidade = +prod.quantidade + +produto.quantidade;
-        }
-
-        window.sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
-        alert('O Produto foi adicionado ao carrinho!');
-      },
-      formatarPreco: function formatarPreco(valor) {
-        var val = (valor / 1).toFixed(2).replace('.', ',');
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      },
-      atualizarProdutos: function atualizarProdutos() {
-        var _this = this;
-
-        var params = {
-          page: this.pagina_atual,
-          q: this.busca,
-          ipp: this.ipp,
-          order_by: this.order_by,
-          order_type: this.order_type
-        };
-        window.axios.get("/api/produto", {
-          params: params
-        }).then(function (response) {
-          _this.paginate_info = response.data;
-          _this.produtos = response.data.data;
-          console.log("response:", response);
-        });
-      },
-      atualizarOrdenacao: function atualizarOrdenacao() {
-        this.order_by = this.input.ordenado_por;
-        this.order_type = this.input.ordenado_tipo;
-        this.ipp = this.input.itens_por_pagina;
-        this.atualizarProdutos();
-      }
-    },
-    mounted: function mounted() {
-      this.atualizarProdutos();
-    },
-    watch: {
-      pagina_atual: function pagina_atual() {
-        this.atualizarProdutos();
-      },
-      busca: function busca() {
-        this.atualizarProdutos();
-      }
-    },
-    components: {}
-  });
-}
-
-if (document.getElementById('app-cadastro')) {
-  var app_cadastro = new Vue({
-    el: '#app-cadastro',
-    data: function data() {
-      return {
-        input: {
-          nome: null,
-          email: null,
-          senha: null,
-          cep: null,
-          endereco: null,
-          telefone: null
-        }
-      };
-    },
-    methods: {
-      onSubmit: function onSubmit(e) {
-        e.preventDefault();
-        var params = this.input;
-        window.axios.post('api/registrar', params).then(function (response) {
-          if (response.status !== 201) {
-            alert(response.data.message);
-          }
-
-          alert('Cadastro realizado com sucesso!');
-          sessionStorage.setItem('access_token', response.data.access_token);
-          sessionStorage.setItem('usuario', JSON.stringify(response.data.user));
-          window.location.href = "/";
-        }).catch(function (response) {
-          alert(response);
-        });
-      }
-    },
-    mounted: function mounted() {},
-    components: {}
-  });
-}
-
-var app_header = new Vue({
-  el: '#app-header',
-  data: function data() {
-    return {
-      usuario: sessionStorage.getItem('usuario') ? JSON.parse(sessionStorage.getItem('usuario')) : null
-    };
-  },
-  methods: {
-    logout: function logout(e) {
-      e.preventDefault();
-      sessionStorage.removeItem('access_token');
-      sessionStorage.removeItem('usuario');
-      window.location.href = "/";
-    }
+[__webpack_require__(/*! ./instancias/cabecalho */ "./resources/js/instancias/cabecalho.js").default, __webpack_require__(/*! ./instancias/carrinho */ "./resources/js/instancias/carrinho.js").default, __webpack_require__(/*! ./instancias/formulario-cadastro */ "./resources/js/instancias/formulario-cadastro.js").default, __webpack_require__(/*! ./instancias/formulario-login */ "./resources/js/instancias/formulario-login.js").default, __webpack_require__(/*! ./instancias/home */ "./resources/js/instancias/home.js").default, __webpack_require__(/*! ./instancias/finalizar */ "./resources/js/instancias/finalizar.js").default].forEach(function (instancia) {
+  if (document.querySelector(instancia.el)) {
+    new Vue(instancia);
   }
 });
-
-if (document.getElementById('app-entrar')) {
-  var app_entrar = new Vue({
-    el: '#app-entrar',
-    data: function data() {
-      return {
-        input: {
-          nome: null,
-          senha: null
-        }
-      };
-    },
-    methods: {
-      onSubmit: function onSubmit(e) {
-        e.preventDefault();
-        var params = this.input;
-        window.axios.post('api/auth/get-token', params).then(function (response) {
-          if (response.status !== 200) {
-            return alert(response.data.message);
-          }
-
-          sessionStorage.setItem('access_token', response.data.access_token);
-          window.axios.get('api/clientes', {
-            params: {
-              token: sessionStorage.getItem('access_token')
-            }
-          }).then(function (response) {
-            sessionStorage.setItem('usuario', JSON.stringify(response.data));
-            alert('Login realizado com sucesso!');
-            window.location.href = "/";
-          }).catch(function (response) {
-            alert(response);
-          });
-        });
-      }
-    },
-    mounted: function mounted() {},
-    components: {}
-  });
-}
-
-if (document.getElementById('app-carrinho')) {
-  var app_carrinho = new Vue({
-    el: '#app-carrinho',
-    data: function data() {
-      var carrinho = sessionStorage.getItem('carrinho');
-      if (!carrinho) carrinho = '[]';
-      return {
-        frete: 0,
-        prazo: false,
-        carrinho: JSON.parse(carrinho),
-        total: 0,
-        cep: null
-      };
-    },
-    methods: {
-      formatarPreco: function formatarPreco(valor) {
-        var val = (valor / 1).toFixed(2).replace('.', ',');
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      },
-      finalizarCompra: function finalizarCompra(e) {
-        if (!this.carrinho.length) {
-          alert('Seu carrinho está vazio.');
-        }
-
-        if (!this.frete) {
-          alert('Por favor primeiro calcule o Frete.');
-          e.preventDefault();
-        }
-      },
-      refreshTotal: function refreshTotal(refreshCarrinho) {
-        var _this2 = this;
-
-        var total = 0;
-        this.carrinho.forEach(function (produto) {
-          total += produto.preco * produto.quantidade;
-        });
-        this.total = total;
-
-        if (refreshCarrinho) {
-          this.carrinho = this.carrinho.filter(function (p) {
-            return +p.quantidade;
-          });
-          console.log("CARRINHO: ", this.carrinho);
-          sessionStorage.setItem('carrinho', JSON.stringify(this.carrinho));
-          var cep = apenasNumeros(this.cep);
-
-          if (cep.length === 8) {
-            sessionStorage.setItem('cep', cep);
-            window.axios.post('/api/frete', {
-              cep: cep,
-              carrinho: this.carrinho
-            }).then(function (response) {
-              _this2.frete = response.data.valor;
-              _this2.prazo = response.data.prazo;
-            });
-          }
-        }
-      }
-    },
-    watch: {
-      cep: function cep() {
-        var _this3 = this;
-
-        var cep = apenasNumeros(this.cep);
-
-        if (cep.length === 8) {
-          sessionStorage.setItem('cep', cep);
-          window.axios.post('/api/frete', {
-            cep: cep,
-            carrinho: this.carrinho
-          }).then(function (response) {
-            _this3.frete = response.data.valor;
-            _this3.prazo = response.data.prazo;
-          });
-        }
-      }
-    },
-    mounted: function mounted() {
-      this.refreshTotal();
-    },
-    components: {}
-  });
-}
-
-if (document.getElementById('app-finalizar')) {
-  var app_finalizar = new Vue({
-    el: '#app-finalizar',
-    data: function data() {
-      var input = {
-        nome: null,
-        email: null,
-        telefone: null,
-        endereco: null,
-        cep: sessionStorage.getItem('cep'),
-        entrega_endereco: null,
-        entrega_cep: sessionStorage.getItem('cep')
-      };
-      input.entrega_cep = sessionStorage.getItem('cep');
-
-      if (sessionStorage.getItem('usuario')) {
-        var usuario = JSON.parse(sessionStorage.getItem('usuario'));
-        input.nome = usuario.nome;
-        input.email = usuario.email;
-        input.telefone = usuario.telefone;
-        input.endereco = usuario.endereco;
-        input.cep = apenasNumeros(usuario.cep);
-      }
-
-      input.entrega_endereco = input.cep == sessionStorage.getItem('cep') ? input.endereco : null;
-      return {
-        frete: null,
-        esta_logado: !!sessionStorage.getItem('usuario'),
-        carrinho: JSON.parse(sessionStorage.getItem('carrinho')),
-        total: 0,
-        cep: sessionStorage.getItem('cep'),
-        mesmo_endereco: input.cep == sessionStorage.getItem('cep'),
-        input: input
-      };
-    },
-    methods: {
-      refreshTotal: function refreshTotal() {
-        var _this4 = this;
-
-        var total = 0;
-        this.carrinho.forEach(function (produto) {
-          total += produto.preco * produto.quantidade;
-        });
-        this.total = total;
-        var cep = apenasNumeros(this.mesmo_endereco ? this.input.cep : this.entrega_cep);
-
-        if (cep.length === 8) {
-          sessionStorage.setItem('cep', cep);
-          window.axios.post('/api/frete', {
-            cep: cep,
-            carrinho: this.carrinho
-          }).then(function (response) {
-            _this4.frete = response.data.valor;
-            _this4.prazo = response.data.prazo;
-          });
-        }
-      },
-      formatarPreco: function formatarPreco(valor) {
-        var val = (valor / 1).toFixed(2).replace('.', ',');
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      },
-      finalizarCompra: function finalizarCompra(e) {
-        e.preventDefault();
-
-        if (!this.frete) {
-          alert('Por favor primeiro calcule o Frete.');
-          return false;
-        }
-
-        var params = {
-          carrinho: this.carrinho,
-          cliente: this.input,
-          entrega: {
-            cep: this.input.entrega_cep,
-            endereco: this.input.entrega_endereco
-          }
-        };
-
-        if (this.esta_logado) {
-          params.token = sessionStorage.getItem('access_token');
-        }
-
-        window.axios.post('api/ordem', params).then(function (response) {
-          if (response.status !== 201) {
-            return alert(response.data.message);
-          }
-
-          alert('Ordem criada com o id: ' + response.data.ordem_id);
-          sessionStorage.removeItem('carrinho');
-          window.location.href = '/';
-        });
-      }
-    },
-    mounted: function mounted() {
-      this.refreshTotal();
-    },
-    components: {}
-  });
-}
-
-function apenasNumeros(string) {
-  string = "" + string;
-  var pattern = /\d+/g;
-  var result = string.match(pattern);
-
-  if (result) {
-    result = result.join('');
-  }
-
-  return "" + result;
-}
 
 /***/ }),
 
@@ -48212,6 +47838,504 @@ if (token) {
 
 /***/ }),
 
+/***/ "./resources/js/instancias/cabecalho.js":
+/*!**********************************************!*\
+  !*** ./resources/js/instancias/cabecalho.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app-header',
+  data: function data() {
+    return {
+      usuario: sessionStorage.getItem('usuario') ? JSON.parse(sessionStorage.getItem('usuario')) : null
+    };
+  },
+  methods: {
+    logout: function logout(e) {
+      e.preventDefault();
+      sessionStorage.removeItem('access_token');
+      sessionStorage.removeItem('usuario');
+      window.location.href = "/";
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/instancias/carrinho.js":
+/*!*********************************************!*\
+  !*** ./resources/js/instancias/carrinho.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app-carrinho',
+  data: function data() {
+    var carrinho = sessionStorage.getItem('carrinho');
+    if (!carrinho) carrinho = '[]';
+    return {
+      frete: 0,
+      prazo: false,
+      carrinho: JSON.parse(carrinho),
+      total: 0,
+      cep: null
+    };
+  },
+  methods: {
+    formatarPreco: function formatarPreco(valor) {
+      var val = (valor / 1).toFixed(2).replace('.', ',');
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+    finalizarCompra: function finalizarCompra(e) {
+      if (!this.carrinho.length) {
+        alert('Seu carrinho está vazio.');
+      }
+
+      if (!this.frete) {
+        alert('Por favor primeiro calcule o Frete.');
+        e.preventDefault();
+      }
+    },
+    refreshTotal: function refreshTotal(refreshCarrinho) {
+      var _this = this;
+
+      var total = 0;
+      this.carrinho.forEach(function (produto) {
+        total += produto.preco * produto.quantidade;
+      });
+      this.total = total;
+
+      if (refreshCarrinho) {
+        this.carrinho = this.carrinho.filter(function (p) {
+          return +p.quantidade;
+        });
+        console.log("CARRINHO: ", this.carrinho);
+        sessionStorage.setItem('carrinho', JSON.stringify(this.carrinho));
+        var cep = this.cep.replace(/[^0-9]/g, '');
+
+        if (cep.length === 8) {
+          sessionStorage.setItem('cep', cep);
+          window.axios.post('/api/frete', {
+            cep: cep,
+            carrinho: this.carrinho
+          }).then(function (response) {
+            _this.frete = response.data.valor;
+            _this.prazo = response.data.prazo;
+          });
+        }
+      }
+    }
+  },
+  watch: {
+    cep: function cep() {
+      var _this2 = this;
+
+      var cep = this.cep.replace(/[^0-9]/g, '');
+
+      if (cep.length === 8) {
+        sessionStorage.setItem('cep', cep);
+        window.axios.post('/api/frete', {
+          cep: cep,
+          carrinho: this.carrinho
+        }).then(function (response) {
+          _this2.frete = response.data.valor;
+          _this2.prazo = response.data.prazo;
+        });
+      }
+    }
+  },
+  mounted: function mounted() {
+    this.refreshTotal();
+  },
+  components: {}
+});
+
+/***/ }),
+
+/***/ "./resources/js/instancias/finalizar.js":
+/*!**********************************************!*\
+  !*** ./resources/js/instancias/finalizar.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app-finalizar',
+  data: function data() {
+    var input = {
+      nome: null,
+      email: null,
+      telefone: null,
+      endereco: null,
+      numero: null,
+      cep: sessionStorage.getItem('cep'),
+      entrega_endereco: null,
+      entrega_numero: null,
+      entrega_cep: sessionStorage.getItem('cep')
+    };
+    input.entrega_cep = sessionStorage.getItem('cep');
+
+    if (sessionStorage.getItem('usuario')) {
+      var usuario = JSON.parse(sessionStorage.getItem('usuario'));
+      input.nome = usuario.nome;
+      input.email = usuario.email;
+      input.telefone = usuario.telefone.replace(/[^0-9]/g, '');
+      input.endereco = usuario.endereco.split(",")[0].trim();
+      input.numero = usuario.endereco.split(", ")[1].trim();
+      input.cep = usuario.cep.replace(/[^0-9]/g, '');
+    }
+
+    input.entrega_endereco = input.cep == sessionStorage.getItem('cep') ? input.endereco : null;
+    input.entrega_numero = input.cep == sessionStorage.getItem('cep') ? input.numero : null;
+    return {
+      frete: null,
+      esta_logado: !!sessionStorage.getItem('usuario'),
+      carrinho: JSON.parse(sessionStorage.getItem('carrinho')),
+      total: 0,
+      cep: sessionStorage.getItem('cep'),
+      mesmo_endereco: input.cep == sessionStorage.getItem('cep'),
+      input: input
+    };
+  },
+  methods: {
+    refreshTotal: function refreshTotal() {
+      var _this = this;
+
+      var total = 0;
+      this.carrinho.forEach(function (produto) {
+        total += produto.preco * produto.quantidade;
+      });
+      this.total = total;
+      var cep = (this.mesmo_endereco ? this.input.cep : this.entrega_cep).replace(/[^0-9]/g, '');
+
+      if (cep.length === 8) {
+        sessionStorage.setItem('cep', cep);
+        window.axios.post('/api/frete', {
+          cep: cep,
+          carrinho: this.carrinho
+        }).then(function (response) {
+          _this.frete = response.data.valor;
+          _this.prazo = response.data.prazo;
+        });
+      }
+    },
+    formatarPreco: function formatarPreco(valor) {
+      var val = (valor / 1).toFixed(2).replace('.', ',');
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+    finalizarCompra: function finalizarCompra(e) {
+      e.preventDefault();
+
+      if (!this.frete) {
+        alert('Por favor primeiro calcule o Frete.');
+        return false;
+      }
+
+      var params = {
+        carrinho: this.carrinho,
+        cliente: this.input,
+        entrega: {
+          cep: this.input.entrega_cep,
+          endereco: this.input.entrega_endereco
+        }
+      };
+
+      if (this.esta_logado) {
+        params.token = sessionStorage.getItem('access_token');
+      }
+
+      window.axios.post('api/ordem', params).then(function (response) {
+        if (response.status !== 201) {
+          return alert(response.data.message);
+        }
+
+        alert('Ordem criada com o id: ' + response.data.ordem_id);
+        sessionStorage.removeItem('carrinho');
+        window.location.href = '/';
+      });
+    },
+    buscarCep: function buscarCep() {
+      var _this2 = this;
+
+      window.axios.get('/api/busca-cep/' + this.input.entrega_cep.replace(/[^0-9]/g, '')).then(function (response) {
+        if (!response.data.logradouro) {
+          alert("Cep inválido.");
+          _this2.input.entrega_cep = null;
+          return;
+        }
+
+        _this2.input.entrega_endereco = response.data.logradouro;
+      });
+    },
+    resetCamposEntrega: function resetCamposEntrega() {
+      this.input.entrega_cep = this.input.cep;
+      this.input.entrega_endereco = this.input.endereco;
+      this.input.numero = this.input.numero;
+    }
+  },
+  mounted: function mounted() {
+    this.refreshTotal();
+  },
+  components: {}
+});
+
+/***/ }),
+
+/***/ "./resources/js/instancias/formulario-cadastro.js":
+/*!********************************************************!*\
+  !*** ./resources/js/instancias/formulario-cadastro.js ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app-cadastro',
+  data: function data() {
+    return {
+      input: {
+        nome: null,
+        email: null,
+        senha: null,
+        cep: null,
+        endereco: null,
+        telefone: null,
+        numero: null
+      }
+    };
+  },
+  methods: {
+    onSubmit: function onSubmit(e) {
+      e.preventDefault();
+      if (!this.validaForm(this.input)) return;
+      var params = this.formataForm(this.input);
+      window.axios.post('api/registrar', params).then(function (response) {
+        if (response.status !== 201) {
+          alert(response.data.message);
+        }
+
+        alert('Cadastro realizado com sucesso!');
+        sessionStorage.setItem('access_token', response.data.access_token);
+        sessionStorage.setItem('usuario', JSON.stringify(response.data.user));
+        window.location.href = "/";
+      }).catch(function (response) {
+        alert(response.response.data.message);
+      });
+    },
+    validaForm: function validaForm(form) {
+      var error = [];
+
+      if (form.nome.trim().match(new RegExp(" +", 'g')).length === 0) {
+        error.push("Digite o nome completo.");
+      }
+
+      if (form.senha.length < 6) {
+        error.push("A senha precisa de no mínimo 6 digitos.");
+      }
+
+      if (form.cep.replace(/[^0-9]/g, '').length !== 8) {
+        error.push("Cep inválido.");
+      }
+
+      if ([10, 11].indexOf(form.telefone.replace(/[^0-9]/g, '').length) === -1) {
+        error.push("telefone, informar o DDD");
+      }
+
+      if (error.length) {
+        alert("Foram encontrados os seguintes erros: " + error.join("\r\n"));
+        return false;
+      }
+
+      return true;
+    },
+    formataForm: function formataForm(form) {
+      return {
+        nome: form.nome,
+        email: form.email,
+        senha: form.senha,
+        cep: form.cep.replace(/[^0-9]/g, ''),
+        endereco: form.endereco + ", " + form.numero,
+        telefone: form.telefone.replace(/[^0-9]/g, '')
+      };
+    },
+    buscarCep: function buscarCep() {
+      var _this = this;
+
+      if (this.input.cep.replace(/[^0-9]/g, '').length !== 8) return;
+      window.axios.get('/api/busca-cep/' + this.input.cep.replace(/[^0-9]/g, '')).then(function (response) {
+        if (!response.data.logradouro) {
+          alert("Cep inválido.");
+          _this.input.cep = null;
+          return;
+        }
+
+        _this.input.endereco = response.data.logradouro;
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/instancias/formulario-login.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/instancias/formulario-login.js ***!
+  \*****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app-entrar',
+  data: function data() {
+    return {
+      input: {
+        nome: null,
+        senha: null
+      }
+    };
+  },
+  methods: {
+    onSubmit: function onSubmit(e) {
+      e.preventDefault();
+      var params = this.input;
+      window.axios.post('api/auth/get-token', params).then(function (response) {
+        if (response.status !== 200) {
+          return alert(response.data.message);
+        }
+
+        sessionStorage.setItem('access_token', response.data.access_token);
+        window.axios.get('api/clientes', {
+          params: {
+            token: sessionStorage.getItem('access_token')
+          }
+        }).then(function (response) {
+          sessionStorage.setItem('usuario', JSON.stringify(response.data));
+          alert('Login realizado com sucesso!');
+          window.location.href = "/";
+        }).catch(function (response) {
+          alert(response.response.data.message);
+        });
+      }).catch(function (response) {
+        alert(response.response.data.message);
+      });
+    }
+  },
+  mounted: function mounted() {},
+  components: {}
+});
+
+/***/ }),
+
+/***/ "./resources/js/instancias/home.js":
+/*!*****************************************!*\
+  !*** ./resources/js/instancias/home.js ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  el: '#app',
+  data: function data() {
+    return {
+      busca: null,
+      ipp: null,
+      order_by: null,
+      order_type: null,
+      produtos: [],
+      pagina_atual: 1,
+      paginate_info: {},
+      input: {
+        busca: null,
+        itens_por_pagina: 10,
+        ordenado_por: 'nome',
+        ordenado_tipo: 'asc'
+      }
+    };
+  },
+  methods: {
+    addCarrinho: function addCarrinho(produto) {
+      if (produto.estoque < produto.quantidade) {
+        return alert('quantidade desejada ultrapassa o limite do estoque');
+      }
+
+      if (produto.quantidade === 0) {
+        return alert('É necessário adicionar pelo menos 1 item.');
+      }
+
+      var carrinho = window.sessionStorage.getItem('carrinho') || '[]';
+      carrinho = JSON.parse(carrinho);
+      var prod = carrinho.find(function (p) {
+        return p.id == produto.id;
+      });
+
+      if (!prod) {
+        carrinho.push(produto);
+      } else {
+        prod.quantidade = +prod.quantidade + +produto.quantidade;
+      }
+
+      window.sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
+      alert('O Produto foi adicionado ao carrinho!');
+    },
+    formatarPreco: function formatarPreco(valor) {
+      var val = (valor / 1).toFixed(2).replace('.', ',');
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+    atualizarProdutos: function atualizarProdutos() {
+      var _this = this;
+
+      var params = {
+        page: this.pagina_atual,
+        q: this.busca,
+        ipp: this.ipp,
+        order_by: this.order_by,
+        order_type: this.order_type
+      };
+      window.axios.get("/api/produto", {
+        params: params
+      }).then(function (response) {
+        _this.paginate_info = response.data;
+        _this.produtos = response.data.data;
+        console.log("response:", response);
+      });
+    },
+    atualizarOrdenacao: function atualizarOrdenacao() {
+      this.order_by = this.input.ordenado_por;
+      this.order_type = this.input.ordenado_tipo;
+      this.ipp = this.input.itens_por_pagina;
+      this.atualizarProdutos();
+    }
+  },
+  mounted: function mounted() {
+    this.atualizarProdutos();
+  },
+  watch: {
+    pagina_atual: function pagina_atual() {
+      this.atualizarProdutos();
+    },
+    busca: function busca() {
+      this.atualizarProdutos();
+    }
+  },
+  components: {}
+});
+
+/***/ }),
+
 /***/ "./resources/sass/app.scss":
 /*!*********************************!*\
   !*** ./resources/sass/app.scss ***!
@@ -48230,8 +48354,8 @@ if (token) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /media/victor/Linux Storage/Projects/carrinho-mobly/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /media/victor/Linux Storage/Projects/carrinho-mobly/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /media/victor/Linux Storage/Projects/mobly-carrinho/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /media/victor/Linux Storage/Projects/mobly-carrinho/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

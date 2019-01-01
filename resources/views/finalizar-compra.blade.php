@@ -61,10 +61,18 @@
                     <input v-model="input.telefone" class="form-control" :readonly="esta_logado" />
                 </label>
 
-                <label class="form-group col-12">
-                    <span>Endereço</span>
-                    <input v-model="input.endereco" class="form-control" :readonly="esta_logado" />
-                </label>
+                <div class="col-12">
+                    <div class="row">
+                        <label class="form-group col-10">
+                            <span>Endereço</span>
+                            <input v-model="input.endereco" class="form-control" :readonly="esta_logado" />
+                        </label>
+                        <label class="form-group col-2">
+                            <span>Endereço</span>
+                            <input v-model="input.numero" class="form-control" :readonly="esta_logado" />
+                        </label>
+                    </div>
+                </div>
                 <label class="form-group col-12">
                     <span>Cep</span>
                     <input v-model="input.cep" class="form-control" :readonly="esta_logado" />
@@ -74,16 +82,24 @@
                 <hr>
 
                 <label class="form-group">
-                    <input type="checkbox" class="form-check-inline" v-model="mesmo_endereco">
+                    <input type="checkbox" class="form-check-inline" v-model="mesmo_endereco" @change="resetCamposEntrega">
                     <span>Mesmo endereço</span>
                 </label>
-                <label class="form-group col-12">
-                    <span>Endereço de entrega</span>
-                    <input v-model="input.entrega_endereco" class="form-control" :disabled="mesmo_endereco" />
-                </label>
+                <div class="col-12">
+                    <div class="row">
+                        <label class="form-group col-10">
+                            <span>Endereço de entrega</span>
+                            <input v-model="input.entrega_endereco" class="form-control" :disabled="mesmo_endereco" readonly />
+                        </label>
+                        <label class="form-group col-2">
+                            <span>Número de entrega</span>
+                            <input v-model="input.entrega_numero" class="form-control" :disabled="mesmo_endereco" />
+                        </label>
+                    </div>
+                </div>
                 <label class="form-group col-12">
                     <span>Cep de entrega</span>
-                    <input v-model="input.entrega_cep" class="form-control" :disabled="mesmo_endereco"  />
+                    <input v-model="input.entrega_cep" class="form-control" :disabled="mesmo_endereco" @blur="buscarCep" />
                 </label>
 
             </div>

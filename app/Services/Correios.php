@@ -14,6 +14,12 @@ use Illuminate\Support\Collection;
 
 class Correios
 {
+
+    static public function buscaCep($cep) {
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+        return json_decode(file_get_contents($url));
+    }
+
     static public function calcularFrete($cep_origem, $cep_destino, Collection $produtos) {
 
         $quantidade_indexada = $produtos->pluck('quantidade','id');

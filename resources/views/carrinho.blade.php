@@ -8,6 +8,9 @@
                     Carrinho
                 </h2>
             </li>
+            <li class="list-group-item text-center py-5" v-show="carrinho.length === 0">
+                <h3>Não há produtos em seu carrinho.</h3>
+            </li>
             <li class="list-group-item" v-for="produto in carrinho">
                 <div class="row justify-content-between">
                     <div class="col-5 d-flex">
@@ -42,7 +45,7 @@
                     <form class="col-3">
                         <label class="form-group">
                             <span>Calcular Frete:</span>
-                            <input type="text" v-model="cep" class="form-control" placeholder="Digite seu cep..." />
+                            <input type="text" v-model="cep" class="form-control" placeholder="Digite seu cep..." :disabled="!carrinho.length" />
                         </label>
 
                         <small class="m-0 text-white text-nowrap" v-if="prazo">

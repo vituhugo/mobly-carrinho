@@ -85,13 +85,13 @@
 
                 <ul class="list-unstyled">
                     <li>
-                        <a href="#!">CrediNestle</a>
+                        <a href="https://www.nescred.com.br/">CrediNestle</a>
                     </li>
                     <li>
-                        <a href="#!">American Express</a>
+                        <a href="https://www.americanexpress.com/br/">American Express</a>
                     </li>
                     <li>
-                        <a href="#!">Stan</a>
+                        <a href="http://stan.com.br/">Stan</a>
                     </li>
                 </ul>
 
@@ -104,13 +104,13 @@
 
                 <ul class="list-unstyled">
                     <li>
-                        <a href="#!">github</a>
+                        <a href="https://github.com/vituhugo">github</a>
                     </li>
                     <li>
-                        <a href="#!">facebook</a>
+                        <a href="https://www.facebook.com/victorhugo.albuquerquerodrigues">facebook</a>
                     </li>
                     <li>
-                        <a href="#!">linkedin</a>
+                        <a href="https://www.linkedin.com/in/victor-hugo-albuquerque-rodrigues-b7450783/">linkedin</a>
                     </li>
                 </ul>
 

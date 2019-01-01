@@ -10,15 +10,15 @@
         </h2>
 
 
-        <form class="form-inline row mb-3">
+        <div class="form-inline row mb-3">
             <div class="col-10">
                 <input class="form-control" type="search" placeholder="Buscar" aria-label="Search" style="width: 100%" v-model="input.busca">
             </div>
 
             <div class="col-2">
-                <button class="btn btn-outline-info my-2 my-sm-0" type="submit" style="width: 100%" @click="busca = input.busca">Buscar</button>
+                <button class="btn btn-outline-info my-2 my-sm-0" style="width: 100%" @click="busca = input.busca">Buscar</button>
             </div>
-        </form>
+        </div>
 
         <div class="card">
             <div class="card-body row">
